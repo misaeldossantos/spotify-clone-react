@@ -3,7 +3,7 @@ import {ThemeProvider} from 'styled-components'
 import {defaultTheme} from "./core/style/Theme";
 import {observer} from 'mobx-react-lite'
 import {GlobalStyle} from "./core/style/Global.styled";
-import {Route, Router} from "react-router-dom";
+import {Redirect, Route, Router, Switch} from "react-router-dom";
 import {MusicPage} from "./containers/music/Music.page";
 import {syncHistoryWithStore} from 'mobx-react-router';
 import createBrowserHistory from 'history/createBrowserHistory';
@@ -21,9 +21,13 @@ const App = observer(() => {
 
             <Provider {...stores}>
                 <Router history={history}>
-                    <div>
+                    <Switch>
+
+                        <Redirect to={"/music"} from={'/'} exact />
+
                         <Route path={'/music'} component={MusicPage}/>
-                    </div>
+
+                    </Switch>
                 </Router>
             </Provider>
 

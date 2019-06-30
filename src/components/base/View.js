@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 export const View = styled.div(props => `
     user-select: ${props.selection? 'text': 'none'};
-    overflow: ${props.scroll? 'auto': 'hidden'};
+    ${!props.allowOverflow? `overflow: ${props.scroll? 'auto': 'hidden'}`: ''};
     display: flex;
     flex-direction: ${props.direction? props.direction: 'column'};
     ${props.alignCenter? 'align-items: center;': ''}

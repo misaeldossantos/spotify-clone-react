@@ -1,9 +1,11 @@
 import React from 'react'
 import {StyledView} from "../base/View";
 import dayjs from 'dayjs'
-import {observer} from 'mobx-react-lite'
 import * as Icons from 'react-icons/io'
 import {RangeIndicator} from "../common/RangeIndicator";
+import {Compose} from "../common/Compose";
+import {PlayerStatus} from "../../core/stores/player.store";
+import Sound from 'react-sound';
 
 const timeZero = dayjs().set("minute", 0).set("hour", 0).set("second", 0);
 
@@ -11,30 +13,47 @@ function formatTime(secs) {
     return dayjs(timeZero).set("second", secs).format(secs >= 3600 ? "h:mm:ss" : "m:ss")
 }
 
-export const PlayerIndicator = observer(({actions, status, currentSg = 0, total = 0, setCurrent}) => {
+export const PlayerIndicator = Compose({
+    inject: ["player"],
 
-    return <Container>
-        <Controls>
-            {/*<Icons.IoIosPlay size={25}/>*/}
-            <Icons.IoIosSkipBackward size={18}/>
-            <CenterControl size={18}>{status === 'pause' ? <Icons.IoIosPlay size={25}/> :
-                <Icons.IoIosPause size={20} />}</CenterControl>
-            <Icons.IoIosSkipForward size={18}/>
-            {/*<Icons.IoIosPlay size={25}/>*/}
-        </Controls>
+    render({player}) {
 
-        <TimeIndicator>
+        const {song = {}, status, playProgress = 0} = player;
 
-            <span>{formatTime(currentSg)}</span>
+        return <Container>
+            <Controls>
+                {/*<Icons.IoIosPlay size={25}/>*/}
+                <Icons.IoIosSkipBackward size={18}/>
+                <CenterControl size={18}
+                               onClick={() => status === PlayerStatus.PAUSED ? player.play() : player.pause()}>{status === PlayerStatus.PAUSED ?
+                    <Icons.IoIosPlay size={25}/> :
+                    <Icons.IoIosPause size={20}/>}</CenterControl>
+                <Icons.IoIosSkipForward size={18}/>
+                {/*<Icons.IoIosPlay size={25}/>*/}
+            </Controls>
 
-            <RangeIndicator value={currentSg} total={total} setValue={setCurrent}/>
+            <TimeIndicator>
 
-            <span>{formatTime(total)}</span>
+                <span>{formatTime(playProgress)}</span>
 
-        </TimeIndicator>
+                <RangeIndicator value={playProgress} total={song.duration} setValue={v => player.setPlayProgress(v)}/>
 
-    </Container>
+                <Sound
+                    url={song.url}
+                    playStatus={status === PlayerStatus.PLAYING? Sound.status.PLAYING: Sound.status.PAUSED}
+                    onPlaying={(pos, dur) => {
+                        player.setPlayProgress(pos.position / 1000)
+                    }}
+                    position={playProgress * 1000}
+                />
 
+                <span>{formatTime(song.duration)}</span>
+
+            </TimeIndicator>
+
+        </Container>
+
+    }
 });
 
 const Controls = StyledView.attrs({
@@ -77,7 +96,7 @@ const TimeIndicator = StyledView.attrs({
 const CenterControl = StyledView(({size = 0, padding = 6}) => `
     overflow: visible;
     padding: ${padding}px;
-    border-radius: ${size + padding/2}px;
+    border-radius: ${size + padding / 2}px;
     justify-content: center;
     align-items: center;
     flex: 1;
@@ -87,5 +106,9 @@ const CenterControl = StyledView(({size = 0, padding = 6}) => `
     
     :hover {
         transform: scale(1.12);
+    }
+    
+    :active {
+        transform: scale(0.7);
     }
 `);

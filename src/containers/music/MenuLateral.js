@@ -1,5 +1,4 @@
 import React from 'react'
-import {observer} from 'mobx-react-lite'
 import {StyledView, View} from "../../components/base/View";
 import chroma from 'chroma-js'
 import {Logo} from "../../components/static/Logo";
@@ -7,39 +6,43 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faHome, faSearch} from '@fortawesome/free-solid-svg-icons'
 import {Text} from "../../components/base/Text";
 import {Link} from "react-router-dom";
-import {inject} from 'mobx-react'
+import {Compose} from "../../components/common/Compose";
 
-export const MenuLateral = inject("routing")(observer(({routing}) => {
+const items = [{
+    label: 'Inicio',
+    icon: faHome,
+    href: "/music/inicio"
+}, {
+    label: 'Busca',
+    icon: faSearch,
+    href: "/music/busca"
+}];
 
-    const pathName = routing.location.pathname || "";
+export const MenuLateral = Compose({
 
-    const items = [{
-        label: 'Inicio',
-        icon: faHome,
-        href: "/music/inicio"
-    }, {
-        label: 'Busca',
-        icon: faSearch,
-        href: "/music/busca"
-    }];
+    inject: ['routing'],
 
-    return <Container>
+    render({routing}) {
+        const pathName = routing.location.pathname || "";
 
-        <View style={{padding: 20}}>
-            <Logo size={140} />
-        </View>
+        return <Container>
 
-        <View>
+            <View style={{padding: 20}}>
+                <Logo size={140} />
+            </View>
 
-            {items.map((item, index) => <Link key={index} to={item.href}><MenuItem active={pathName.startsWith(item.href)}>
-                <FontAwesomeIcon icon={item.icon} size={"1x"}/>
-                <Text size={10}>{item.label}</Text>
-            </MenuItem></Link>)}
+            <View>
 
-        </View>
-    </Container>
+                {items.map((item, index) => <Link key={index} to={item.href}><MenuItem active={pathName.startsWith(item.href)}>
+                    <FontAwesomeIcon icon={item.icon} size={"1x"}/>
+                    <Text size={10}>{item.label}</Text>
+                </MenuItem></Link>)}
 
-}));
+            </View>
+        </Container>
+    }
+
+});
 
 const Container = StyledView.attrs({internalDistance: 10})(props => `
     width: 230px;

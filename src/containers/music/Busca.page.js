@@ -2,17 +2,29 @@ import React from 'react'
 import {StyledView} from "../../components/base/View";
 import chroma from 'chroma-js'
 import styled from 'styled-components'
+import {Compose} from "../../components/common/Compose";
 
-export const BuscaPage = (props) => {
+export const BuscaPage = Compose({
 
-    return <Container>
+    inject: ['player'],
 
-        <SearchBar>
-            <Input autoFocus placeholder={"Comece a escrever..."}/>
-        </SearchBar>
+    render({player: playerStore}) {
 
-    </Container>
-};
+        React.useEffect(() => {
+            playerStore.gradientBgColor = "black"
+        }, [])
+
+        return <Container>
+
+            <SearchBar>
+                <Input autoFocus placeholder={"Comece a escrever..."}/>
+            </SearchBar>
+
+        </Container>
+
+    }
+
+});
 
 const Container = StyledView.attrs()(({bgColor}) => `
 
@@ -21,15 +33,6 @@ const Container = StyledView.attrs()(({bgColor}) => `
         padding-right: 20% !important;
     }
 `);
-
-// const Container = StyledView(props => `
-//
-//     > * {
-//         padding-left: 20% !important;
-//         padding-right: 20% !important;
-//     }
-//
-// `);
 
 const SearchBar = StyledView(props => `
 

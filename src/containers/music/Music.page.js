@@ -1,44 +1,65 @@
 import React from 'react'
 import {StyledView, View} from "../../components/base/View";
-import Player from "../../components/player/Player";
+import Player from "./Player";
 import {MenuLateral} from "./MenuLateral";
-import {Route, Router} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import {InicioPage} from "./Inicio.page";
 import {BuscaPage} from "./Busca.page";
-import {observer} from 'mobx-react-lite'
 import BgGradient from "../../components/common/BgGradient";
-import {inject} from 'mobx-react'
+import {Compose} from "../../components/common/Compose";
+import Fade from 'react-fade-opacity'
+import posed, {PoseGroup} from 'react-pose';
 
 const preventContextMenuClick = (e) => e.preventDefault();
 
-export const MusicPage = inject("playerStore")(observer(({match, children, playerStore}) => {
+export const MusicPage = Compose({
+    inject: ["player"],
+
+    render({match, player: playerStore}) {
 
 
-    return <Container onContextMenu={preventContextMenuClick}>
+        return <Container onContextMenu={preventContextMenuClick}>
 
-        <BgGradient bgColor={playerStore.gradientBgColor} />
+            <BgGradient bgColor={playerStore.gradientBgColor}/>
 
-        <View id={"main"} flex direction={"row"}>
+            <View flex direction={"row"}>
 
-            <MenuLateral/>
+                <MenuLateral/>
 
-            <Content>
+                <Content>
 
-                <Route path={`${match.url}/inicio`} component={InicioPage}/>
+                    <PoseGroup>
+                        <RoutesContainer key={match.url}>
+                            <Switch>
+                                <Route path={`${match.url}/inicio`} component={InicioPage}/>
 
-                <Route path={`${match.url}/busca`} component={BuscaPage}/>
+                                <Route path={`${match.url}/busca`} component={BuscaPage}/>
+                            </Switch>
+                        </RoutesContainer>
+                    </PoseGroup>
 
-            </Content>
+                </Content>
 
-        </View>
+            </View>
 
-        <Player/>
+            <Player/>
 
-    </Container>
-}));
+        </Container>
+    }
+});
 
-const Container = StyledView.attrs({absolute: {all: true}, primary: true})(({bgColor}) => `
-`);
+const RoutesContainer = posed.div({
+    enter: {
+        y: "-100%",
+        type: 'tween'
+    },
+    exit: {
+        x: "-100%",
+        type: 'tween'
+    }
+});
+
+const Container = StyledView.attrs({absolute: {all: true}, primary: true})(({bgColor}) => ``);
 
 const Content = StyledView(props => `
     flex: 1;
