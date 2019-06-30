@@ -1,26 +1,36 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {ThemeProvider} from 'styled-components'
+import {defaultTheme} from "./core/style/Theme";
+import {observer} from 'mobx-react-lite'
+import {GlobalStyle} from "./core/style/Global.styled";
+import {Route, Router} from "react-router-dom";
+import {MusicPage} from "./containers/music/Music.page";
+import {syncHistoryWithStore} from 'mobx-react-router';
+import createBrowserHistory from 'history/createBrowserHistory';
+import {Provider} from 'mobx-react'
+import stores from "./core/stores/stores";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const history = syncHistoryWithStore(createBrowserHistory(), stores.routing);
+
+const App = observer(() => {
+
+    return <ThemeProvider theme={defaultTheme}>
+
+        <>
+            <GlobalStyle/>
+
+            <Provider {...stores}>
+                <Router history={history}>
+                    <div>
+                        <Route path={'/music'} component={MusicPage}/>
+                    </div>
+                </Router>
+            </Provider>
+
+        </>
+
+    </ThemeProvider>
+
+});
 
 export default App;
