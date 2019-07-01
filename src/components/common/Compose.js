@@ -13,7 +13,7 @@ function create({inject: injectStores, observer: putObserver = true, render: com
     }
 
     if (injectStores) {
-        component = inject(injectStores)(component)
+        component = inject(...injectStores)(component)
     }
 
     return component;

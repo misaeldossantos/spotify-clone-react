@@ -19,6 +19,9 @@ export class PlayerStore {
     gradientBgColor = "blue";
 
     @observable
+    bgColorOpacity;
+
+    @observable
     song = {
         duration: 200,
         name: 'Musica exemplo',
@@ -53,4 +56,8 @@ export class PlayerStore {
         this.status = PlayerStatus.PLAYING;
     }
 
+    @action
+    setGradientBgColor(value) {
+        this.gradientBgColor = value;
+    }
 }

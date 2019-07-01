@@ -7,20 +7,18 @@ import {InicioPage} from "./Inicio.page";
 import {BuscaPage} from "./Busca.page";
 import BgGradient from "../../components/common/BgGradient";
 import {Compose} from "../../components/common/Compose";
-import Fade from 'react-fade-opacity'
 import posed, {PoseGroup} from 'react-pose';
 
 const preventContextMenuClick = (e) => e.preventDefault();
 
 export const MusicPage = Compose({
-    inject: ["player"],
+    inject: ["player", "routing"],
 
-    render({match, player: playerStore}) {
-
+    render({match, player: playerStore, location}) {
 
         return <Container onContextMenu={preventContextMenuClick}>
 
-            <BgGradient bgColor={playerStore.gradientBgColor}/>
+            <BgGradient bgColor={playerStore.gradientBgColor} />
 
             <View flex direction={"row"}>
 
@@ -28,16 +26,19 @@ export const MusicPage = Compose({
 
                 <Content>
 
-                    <PoseGroup>
-                        <RoutesContainer key={match.url}>
-                            <Switch>
-                                <Route path={`${match.url}/inicio`} component={InicioPage}/>
+                    {/*<Routes match={match} location={location}/>*/}
 
-                                <Route path={`${match.url}/busca`} component={BuscaPage}/>
+                    {/*<PoseGroup>*/}
+                        {/*<RoutesContainer key={location.key}>*/}
+                            <Switch location={location}>
+                                <Route path={`${match.url}/inicio`} component={InicioPage} />
+
+                                <Route path={`${match.url}/busca`} component={BuscaPage} exact />
+
+                                <Route path={`${match.url}/busca/:q`} component={BuscaPage} />
                             </Switch>
-                        </RoutesContainer>
-                    </PoseGroup>
-
+                        {/*</RoutesContainer>*/}
+                    {/*</PoseGroup>*/}
                 </Content>
 
             </View>
@@ -49,11 +50,11 @@ export const MusicPage = Compose({
 });
 
 const RoutesContainer = posed.div({
-    enter: {
+    open: {
         y: "-100%",
         type: 'tween'
     },
-    exit: {
+    closed: {
         x: "-100%",
         type: 'tween'
     }

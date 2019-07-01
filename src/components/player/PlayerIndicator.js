@@ -41,7 +41,7 @@ export const PlayerIndicator = Compose({
                 <Sound
                     url={song.url}
                     playStatus={status === PlayerStatus.PLAYING? Sound.status.PLAYING: Sound.status.PAUSED}
-                    onPlaying={(pos, dur) => {
+                    onPlaying={(pos) => {
                         player.setPlayProgress(pos.position / 1000)
                     }}
                     position={playProgress * 1000}

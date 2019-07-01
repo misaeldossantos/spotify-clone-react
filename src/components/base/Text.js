@@ -7,4 +7,5 @@ export const Text = styled.span((props) => `
     ${props.subtitle? `color: ${props.theme.colors.subtitle}`: ''}
     ${props.bold? 'font-weight: bold;': ''}
     ${props.size? `font-size: ${props.size}pt;`: ''}
+    ${props.color? `color: ${props.color};`: ''}
 `);
