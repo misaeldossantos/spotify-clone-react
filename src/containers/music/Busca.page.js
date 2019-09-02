@@ -5,8 +5,8 @@ import styled from 'styled-components'
 import {Compose} from "../../components/common/Compose";
 import {Helmet} from "react-helmet";
 import {Text} from "../../components/base/Text";
-import {FadeAnimate, HighlightButton} from "../../components/common/Animations";
-
+import {FadeAnimate, FromLeftAnimate, HighlightButton, LetterAnimate} from "../../components/common/Animations";
+import { Trail, animated } from 'react-spring/renderprops'
 
 export const BuscaPage = Compose({
 
@@ -21,36 +21,40 @@ export const BuscaPage = Compose({
 
             if (q) {
                 playerStore.setGradientBgColor(chroma("black").alpha(0.9))
+                console.log("pesquisando por " + q)
+
+
             } else {
                 playerStore.setGradientBgColor("black")
             }
 
         }, [q]);
 
+        const search = (value) => {
+            replace("/music/busca/" + value)
+        };
+
         return <Container>
-            <Helmet>
-                <title>Busca {q ? `por ${q}` : ''}</title>
-            </Helmet>
+                <Helmet>
+                    <title>{q ? `Buscando por ${q}` : 'Busca'}</title>
+                </Helmet>
 
-            <SearchBar>
-                <Input autoFocus placeholder={"Comece a escrever..."}
-                       onChange={el => replace("/music/busca/" + el.target.value)}
-                       value={q}
-                />
-            </SearchBar>
+                <SearchBar>
+                    <Input autoFocus placeholder={"Comece a escrever..."}
+                           onChange={(el) => search(el.target.value)}
+                           value={q}
+                    />
+                </SearchBar>
 
-            {q ? <FadeAnimate key={"results"}>
-                    <Results>
+            <FadeAnimate delay={100} key={!!q}>
+
+                    {q ? <Results>
                         <Text bold size={20}>Mostrando resultados para {q}</Text>
-                    </Results>
-                </FadeAnimate> :
+                    </Results> : <History/>}
 
-                <FadeAnimate key={"history"}>
-                    <History/>
-                </FadeAnimate>}
+                </FadeAnimate>
 
-        </Container>
-
+            </Container>
     }
 
 });
@@ -64,7 +68,7 @@ const Container = StyledView.attrs()(({bgColor}) => `
 
 const SearchBar = StyledView(props => `
 
-    background-color: ${chroma("gray").alpha(0.4)};
+    background-color: ${chroma("gray").alpha(0.2)};
     width: 100%;
     
 `);
@@ -83,9 +87,10 @@ const Input = styled.input(({theme}) => `
 
 const Results = StyledView``;
 
-const ItemHistory = ({name = "", category = ""}) => {
+export const ItemHistory = ({name = "", category = ""}) => {
     return <View internalDistance={5}>
-        <HighlightButton activeColor={"white"} inactiveColor={chroma("white").darken(1.4)} bold size={20}>{name}</HighlightButton>
+        <HighlightButton activeColor={"white"} inactiveColor={chroma("white").darken(1.4)} bold
+                         size={20}>{name}</HighlightButton>
         <Text size={9} color={chroma("white").darken(2)}>{category.toUpperCase()}</Text>
     </View>
 };
@@ -98,10 +103,29 @@ const History = Compose({
 
         return <View internalDistance={15}>
 
-            <Text color={chroma("white").darken(1)}>O que você ouviu recentemente: </Text>
+            <Text color={chroma("white").darken(1)}>
+                <LetterAnimate str={"O que você ouviu recentemente:"} />
+            </Text>
 
             <View internalDistance={10}>
-                {history.map((item, index) => <ItemHistory key={index} {...item}/>)}
+
+                <Trail
+                    native
+                    items={history}
+                    from={{ x: -100 }}
+                    to={{ x: 0 }}
+                    delay={200}
+                >
+                    {item => ({ x, opacity }) => (
+                        <animated.div
+                            style={{
+                                opacity,
+                                transform: x.interpolate(x => `translate3d(${x}%,0,0)`),
+                            }}
+                        ><ItemHistory {...item}/></animated.div>
+                    )}
+                </Trail>
+
             </View>
 
         </View>

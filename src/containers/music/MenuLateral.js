@@ -34,9 +34,11 @@ export const MenuLateral = Compose({
             <View>
 
                 {items.map((item, index) => <Link key={index} to={item.href}><MenuItem active={pathName.startsWith(item.href)}>
-                    <FontAwesomeIcon icon={item.icon} size={"1x"}/>
+                    <FontAwesomeIcon icon={item.icon} size={"1x"} />
                     <Text size={10}>{item.label}</Text>
                 </MenuItem></Link>)}
+
+                <ActiveBar height={40} index={items.findIndex(item => pathName.startsWith(item.href))} />
 
             </View>
         </Container>
@@ -55,7 +57,7 @@ const MenuItem = StyledView.attrs({
     internalDistance: 15,
     direction: 'row',
     alignCenter: true
-})(({active, theme}) => `
+})(({active}) => `
 
     cursor: pointer;
     padding: 20px 20px 10px 20px;
@@ -69,19 +71,20 @@ const MenuItem = StyledView.attrs({
     }
 
     ${active? `
-    
-    ::after {
-        content: "";
-        display: block;
-        position: absolute;
-        top: 5px;
-        left: 0;
-        bottom: 5px;
-        width: 4px;
-        background-color: ${theme.colorPrimaryActive};
-    }
-    
-    color: white;    
-    
+        color: white; 
     `: ''}
+`);
+
+const ActiveBar = StyledView(({index, theme, height}) => `
+    content: "";
+    ${height? `height: ${height}px;`: ''}
+    ${index && height? `transform: translateY(${index * height}px);`: ''}
+    transition: transform 0.2s;
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 0;
+    bottom: 5px;
+    width: 4px;
+    background-color: ${theme.colorPrimaryActive};
 `);

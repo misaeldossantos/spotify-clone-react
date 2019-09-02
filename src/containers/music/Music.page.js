@@ -2,12 +2,12 @@ import React from 'react'
 import {StyledView, View} from "../../components/base/View";
 import Player from "./Player";
 import {MenuLateral} from "./MenuLateral";
-import {Route, Switch} from "react-router-dom";
+import {Redirect, Route, Switch} from "react-router-dom";
 import {InicioPage} from "./Inicio.page";
 import {BuscaPage} from "./Busca.page";
 import BgGradient from "../../components/common/BgGradient";
 import {Compose} from "../../components/common/Compose";
-import posed, {PoseGroup} from 'react-pose';
+import {animated, Transition} from 'react-spring/renderprops'
 
 const preventContextMenuClick = (e) => e.preventDefault();
 
@@ -18,7 +18,7 @@ export const MusicPage = Compose({
 
         return <Container onContextMenu={preventContextMenuClick}>
 
-            <BgGradient bgColor={playerStore.gradientBgColor} />
+            <BgGradient bgColor={playerStore.gradientBgColor}/>
 
             <View flex direction={"row"}>
 
@@ -26,19 +26,29 @@ export const MusicPage = Compose({
 
                 <Content>
 
-                    {/*<Routes match={match} location={location}/>*/}
+                    <Transition
+                        native
+                        items={location}
+                        key={location.pathname.split('/')[2]}
+                        from={{transform: 'translateY(100px)', opacity: 0}}
+                        enter={{transform: 'translateY(0px)', opacity: 1}}
+                        leave={{transform: 'translateY(100px)', opacity: 0}}>
+                        {(loc, state) => style => (
+                            <View>
+                                <animated.div style={style}>
+                                    <Switch location={state === 'update' ? location : loc}>
+                                        <Redirect from={"/"} exact to={`${match.url}/inicio`}/>
+                                        <Route path={`${match.url}/inicio`} component={InicioPage}/>
 
-                    {/*<PoseGroup>*/}
-                        {/*<RoutesContainer key={location.key}>*/}
-                            <Switch location={location}>
-                                <Route path={`${match.url}/inicio`} component={InicioPage} />
+                                        <Route path={`${match.url}/busca`} component={BuscaPage} exact/>
 
-                                <Route path={`${match.url}/busca`} component={BuscaPage} exact />
+                                        <Route path={`${match.url}/busca/:q`} component={BuscaPage}/>
+                                    </Switch>
+                                </animated.div>
+                            </View>
+                        )}
+                    </Transition>
 
-                                <Route path={`${match.url}/busca/:q`} component={BuscaPage} />
-                            </Switch>
-                        {/*</RoutesContainer>*/}
-                    {/*</PoseGroup>*/}
                 </Content>
 
             </View>
@@ -49,16 +59,6 @@ export const MusicPage = Compose({
     }
 });
 
-const RoutesContainer = posed.div({
-    open: {
-        y: "-100%",
-        type: 'tween'
-    },
-    closed: {
-        x: "-100%",
-        type: 'tween'
-    }
-});
 
 const Container = StyledView.attrs({absolute: {all: true}, primary: true})(({bgColor}) => ``);
 
