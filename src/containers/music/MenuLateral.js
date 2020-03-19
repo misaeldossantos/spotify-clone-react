@@ -1,12 +1,12 @@
-import React from 'react'
-import {StyledView, View} from "../../components/base/View";
-import chroma from 'chroma-js'
-import {Logo} from "../../components/static/Logo";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faHome, faSearch} from '@fortawesome/free-solid-svg-icons'
-import {Text} from "../../components/base/Text";
-import {Link} from "react-router-dom";
-import {Compose} from "../../components/common/Compose";
+import { faHome, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import chroma from 'chroma-js';
+import React from 'react';
+import { Link, useLocation } from "react-router-dom";
+import { Text } from "../../components/base/Text";
+import { StyledView, View } from "../../components/base/View";
+import { Compose } from "../../components/common/Compose";
+import { Logo } from "../../components/static/Logo";
 
 const items = [{
     label: 'Inicio',
@@ -23,7 +23,11 @@ export const MenuLateral = Compose({
     inject: ['routing'],
 
     render({routing}) {
-        const pathName = routing.location.pathname || "";
+        
+        const location = useLocation()
+        const pathName = location.pathname
+
+        const index = items.findIndex(item => pathName.startsWith(item.href))
 
         return <Container>
 
@@ -38,7 +42,7 @@ export const MenuLateral = Compose({
                     <Text size={10}>{item.label}</Text>
                 </MenuItem></Link>)}
 
-                <ActiveBar height={40} index={items.findIndex(item => pathName.startsWith(item.href))} />
+                {index != -1 && <ActiveBar height={40} index={index} />}
 
             </View>
         </Container>
